@@ -1,0 +1,241 @@
+#	Ergasia Architektoniki Ypologistwn
+#
+#
+#
+#
+	#The Data Segment
+
+	.data
+GiveMe:	.asciiz		"Give me"
+a_p:	.asciiz 	" a("
+p_e:	.asciiz 	")="
+b_p:	.asciiz 	" b("
+c_p:	.asciiz 	" c("
+comma:	.asciiz 	","
+				
+	
+#The Text Segment
+	.text
+	
+
+main:
+
+	lui $a1, 0x1000
+
+	lui $a2, 0x1000
+	addi $a2, $a2, 0x100
+	lui $a3, 0x1000
+	addi $a3, $a3, 0x200
+	
+	or $t0, $0, $a1		# dieythynsh apothhkeyshs
+	addi $s3, $0, 2		#bohthhtiko
+	add $s0, $0, $0 	# s0=0
+
+Loop1:
+	bge $s0, $s3, Exloop1
+	add $s1, $0, $0		#s1=0
+
+Loop2:
+	bge $s1, $s3, Exloop2
+
+	addi $v0, $0, 4
+	la $a0, a_p
+	syscall			#Print "a("
+
+	or $a0, $s0, $0
+	addi $v0,$0, 1
+	syscall			#Print s0
+
+	addi $v0, $0, 4
+	la $a0, comma
+	syscall			#Print ","
+
+	or $a0, $s1, $0		#######################
+	addi $v0, $0, 1
+	syscall			#Print s1
+
+
+	addi $v0, $0, 4
+	la $a0, p_e
+	syscall			#Print ")="
+
+	addi $v0, $0,7
+	syscall			#Read a1[s0][s1]
+
+	sdc1 $f0, ($t0)
+	addi $t0, $t0, 64
+	
+	addi $s1, $s1, 1	#s1++
+
+	j Loop2
+
+Exloop2:
+	addi $s0, $s0, 1
+	j Loop1
+
+Exloop1:
+#----------------------------------------------------------------------------
+
+
+	or $t0, $0, $a2		# dieythynsh apothhkeyshs
+	add $s0, $0, $0 	# s0=0
+
+Loop3:
+	bge $s0, $s3, Exloop3
+	add $s1, $0, $0		#s1=0
+
+Loop4:
+	bge $s1, $s3, Exloop4
+
+	addi $v0, $0, 4
+	la $a0, b_p
+	syscall			#Print "b("
+
+	or $a0, $s0, $0
+
+	addi $v0,$0, 1
+	syscall			#Print s0
+
+	addi $v0, $0, 4
+	la $a0, comma
+	syscall			#Print ','
+
+	addi $v0, $0, 1
+	or $a0, $s1, $0
+	syscall			#Print s1
+
+	addi $v0, $0, 4
+	la $a0, p_e
+	syscall			#Print ")="
+
+	addi $v0, $0, 7
+	syscall			#Read a1[s0][s1]
+
+
+	sdc1 $f0, ($t0)
+	addi $t0, $t0, 64
+
+	addi $s1, $s1,1		#s1++
+
+	j Loop4
+
+Exloop4:
+	addi $s0, $s0, 1
+	j Loop3
+
+Exloop3:
+
+#------------------------------Calculation-----------------------------#
+	addi $s4,$0, 0
+        addi $s5,$0, 0
+
+        or $t1, $0, $a1
+	or $t2, $0, $a2
+
+	or $t0, $0, $a3			# dieythinsi apothikeysis
+	and $s0, $0, $0		          #s0=0
+
+Loop5:
+	bge $s0, $s3, Exloop5		#Branch to target if $s0 >= $s3
+	and $s1, $0, $0			#s1=0
+
+Loop6:
+	bge $s1, $s3, Exloop6
+	sub.d $f6, $f6, $f6		#f6=0
+	and $s2, $0, $0			#s2=0
+Loop7:
+	bge $s2, $s3, Exloop7
+
+        ldc1 $f2,($t1)
+        ldc1 $f4,($t2)
+
+        mul.d $f0,$f2,$f4                 #f0=f2*f4
+        add.d $f6,$f6,$f0                 #f6+=f0
+        addi $s2,$s2,1                    #s2++
+        addi $t1,$t1,64                    #t0+=8
+        addi $t2,$t2,128
+
+	j Loop7
+
+Exloop7: sdc1 $f6,($t0)                    #apothhkeysh f6
+
+        addi $t0,$t0,64
+        addi $t1,$t1,-128
+
+        beq $s5,$s4,LoopA
+        beq $s1,$s4,LoopB
+
+LoopA:  addi $t2,$t2,-192
+        addi $s4,$0,1
+        addi $s1,$s1,1
+
+        j Loop6
+
+LoopB:  addi $t2,$t2,-64
+        addi $s1,$s1,1
+        j Loop6
+
+Exloop6:
+	addi $s0,$s0,1		#s0++
+        addi $t2,$t2, -256
+        addi $t1,$t1, 128
+
+        j Loop5
+
+Exloop5:
+
+#---------------------------Emfanisi Pinaka----------------------------#
+
+	or $t0, $a3, $0
+	add $s0, $0, $0                     #s0++;
+
+Loop8:
+         bge $s0, $s3, Exloop8
+	 add $s1, $0, $0		   #s1=0;
+Loop9:
+         bge $s1,$s3,Exloop9
+
+         addi $v0,$0,4
+         la $a0, c_p
+         syscall		#cout << "c("
+
+         or $a0,$s0,$0
+         addi $v0,$0,1
+         syscall		#cout << s0;
+
+         addi $v0,$0, 4
+         la $a0, comma
+         syscall		#cout << ','
+
+         or $a0,$s1,$0
+         addi $v0,$0,1
+         syscall		#cout << s1;
+
+         addi $v0,$0,4
+         la $a0, p_e
+         syscall                          #cout << ")=";
+
+         addi $v0,$0,3
+         ldc1 $f12 ,($t0)
+         syscall                          #cout << a3[s0][s1];
+
+         addi $t0,$t0,64
+         addi $s1,$s1,1
+         j Loop9
+
+Exloop9:
+         addi $s0,$s0,1
+         j Loop8
+
+Exloop8:
+
+#-----------------------------Exit Program------------------------------#
+
+
+	li	$v0, 10		#Exit program
+	syscall
+
+
+
+
+
